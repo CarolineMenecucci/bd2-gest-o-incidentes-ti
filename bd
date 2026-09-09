@@ -1,0 +1,415 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
+USE `mydb` ;
+
+-- -----------------------------------------------------
+-- Table `mydb`.`PERFIL`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`PERFIL` (
+  `id_perfil` INT NULL AUTO_INCREMENT COMMENT 'identificador do perfil de cadastro',
+  `nome` VARCHAR(30) NOT NULL COMMENT 'nome do perfil',
+  `descricao` VARCHAR(260) NULL,
+  `ativo` TINYINT NOT NULL,
+  `data_criacao` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_perfil`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`USUARIO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`USUARIO` (
+  `id_usuario` BIGINT(100) NULL AUTO_INCREMENT,
+  `nome` VARCHAR(150) NOT NULL,
+  `email` VARCHAR(260) NOT NULL,
+  `senha_hash` VARCHAR(250) NOT NULL,
+  `ativo` TINYINT UNSIGNED NOT NULL,
+  `ultimo_login` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_criacao` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id_perfil` INT NOT NULL,
+  `data_atualizacao` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_usuario`),
+  CONSTRAINT `fk_USUARIO_PERFIL1`
+    FOREIGN KEY (`id_perfil`)
+    REFERENCES `mydb`.`PERFIL` (`id_perfil`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_USUARIO_PERFIL1_idx` ON `mydb`.`USUARIO` (`id_perfil` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`TENTATIVA_LOGIN`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`TENTATIVA_LOGIN` (
+  `id_tentativa` BIGINT(100) NULL AUTO_INCREMENT,
+  `email_informado` VARCHAR(255) NOT NULL,
+  `sucesso` TINYINT NOT NULL,
+  `data_tentativa` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `endereço_ip` VARCHAR(45) NULL,
+  `user_agent` VARCHAR(500) NULL,
+  `motivo_falha` VARCHAR(255) NULL,
+  `id_usuario` INT NOT NULL,
+  PRIMARY KEY (`id_tentativa`),
+  CONSTRAINT `fk_TENTATIVA_LOGIN_USUARIO1`
+    FOREIGN KEY (`id_usuario`)
+    REFERENCES `mydb`.`USUARIO` (`id_usuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_TENTATIVA_LOGIN_USUARIO1_idx` ON `mydb`.`TENTATIVA_LOGIN` (`id_usuario` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`ORIGEM_INCIDENTE`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`ORIGEM_INCIDENTE` (
+  `id_origem_incidente` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` VARCHAR(255) NULL,
+  `ativo` TINYINT NULL,
+  PRIMARY KEY (`id_origem_incidente`))
+ENGINE = InnoDB;
+
+CREATE UNIQUE INDEX `nome_UNIQUE` ON `mydb`.`ORIGEM_INCIDENTE` (`nome` ASC) VISIBLE;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`CATEGORIA_INCIDENTE`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`CATEGORIA_INCIDENTE` (
+  `id_categoria_incidente` INT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` VARCHAR(255) NULL,
+  `ativo` TINYINT NOT NULL,
+  PRIMARY KEY (`id_categoria_incidente`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`SEVERIDADE`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`SEVERIDADE` (
+  `id_severidade` TINYINT(100) NULL,
+  `nome` VARCHAR(20) NOT NULL,
+  `nivel` TINYINT(100) NOT NULL,
+  `descricao` VARCHAR(250) NULL,
+  PRIMARY KEY (`id_severidade`))
+ENGINE = InnoDB;
+
+CREATE UNIQUE INDEX `nome_UNIQUE` ON `mydb`.`SEVERIDADE` (`nome` ASC);
+
+CREATE UNIQUE INDEX `nivel_UNIQUE` ON `mydb`.`SEVERIDADE` (`nivel` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`STATUS_INCIDENTE`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`STATUS_INCIDENTE` (
+  `id_status_incidente` TINYINT(150) NULL,
+  `nome` VARCHAR(30) NOT NULL,
+  `ordem` TINYINT(150) NOT NULL,
+  `status_final` TINYINT NOT NULL,
+  PRIMARY KEY (`id_status_incidente`))
+ENGINE = InnoDB;
+
+CREATE UNIQUE INDEX `nome_UNIQUE` ON `mydb`.`STATUS_INCIDENTE` (`nome` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`ATIVO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`ATIVO` (
+  `id_ativo` BIGINT(100) NULL AUTO_INCREMENT,
+  `nome` VARCHAR(150) NOT NULL,
+  `tipo` VARCHAR(50) NOT NULL,
+  `descricao` VARCHAR(500) NOT NULL,
+  `criticidade` VARCHAR(10) NOT NULL,
+  `endereco_ip` VARCHAR(50) NULL,
+  `hostname` VARCHAR(255) NULL,
+  `ativo` TINYINT NOT NULL,
+  `data_criacao` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_ativo`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`INCIDENTE`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`INCIDENTE` (
+  `id_incidente` BIGINT(150) NULL,
+  `codigo` VARCHAR(35) NOT NULL,
+  `titulo` VARCHAR(200) NOT NULL,
+  `descricao` TEXT(150) NOT NULL,
+  `data_ocorrencia` DATETIME NOT NULL,
+  `data_registro` DATETIME NOT NULL,
+  `id_origem_incidente` INT NOT NULL,
+  `id_categoria_incidente` INT NOT NULL,
+  `id_severidade` TINYINT(100) NOT NULL,
+  `id_status_incidente` TINYINT(150) NOT NULL,
+  `id_ativo` BIGINT(100) NOT NULL,
+  `id_usuario` BIGINT(100) NOT NULL,
+  `data_atualizacao` DATETIME NOT NULL,
+  `data_resolucao` DATETIME NULL,
+  `data_encerramento` DATETIME NULL,
+  PRIMARY KEY (`id_incidente`),
+  CONSTRAINT `fk_INCIDENTE_ORIGEM_INCIDENTE1`
+    FOREIGN KEY (`id_origem_incidente`)
+    REFERENCES `mydb`.`ORIGEM_INCIDENTE` (`id_origem_incidente`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_INCIDENTE_CATEGORIA_INCIDENTE1`
+    FOREIGN KEY (`id_categoria_incidente`)
+    REFERENCES `mydb`.`CATEGORIA_INCIDENTE` (`id_categoria_incidente`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_INCIDENTE_SEVERIDADE1`
+    FOREIGN KEY (`id_severidade`)
+    REFERENCES `mydb`.`SEVERIDADE` (`id_severidade`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_INCIDENTE_STATUS_INCIDENTE1`
+    FOREIGN KEY (`id_status_incidente`)
+    REFERENCES `mydb`.`STATUS_INCIDENTE` (`id_status_incidente`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_INCIDENTE_ATIVO1`
+    FOREIGN KEY (`id_ativo`)
+    REFERENCES `mydb`.`ATIVO` (`id_ativo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_INCIDENTE_USUARIO1`
+    FOREIGN KEY (`id_usuario`)
+    REFERENCES `mydb`.`USUARIO` (`id_usuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE UNIQUE INDEX `codigo_UNIQUE` ON `mydb`.`INCIDENTE` (`codigo` ASC);
+
+CREATE INDEX `fk_INCIDENTE_ORIGEM_INCIDENTE1_idx` ON `mydb`.`INCIDENTE` (`id_origem_incidente` ASC) ;
+
+CREATE INDEX `fk_INCIDENTE_CATEGORIA_INCIDENTE1_idx` ON `mydb`.`INCIDENTE` (`id_categoria_incidente` ASC) ;
+
+CREATE INDEX `fk_INCIDENTE_SEVERIDADE1_idx` ON `mydb`.`INCIDENTE` (`id_severidade` ASC) ;
+
+CREATE INDEX `fk_INCIDENTE_STATUS_INCIDENTE1_idx` ON `mydb`.`INCIDENTE` (`id_status_incidente` ASC) ;
+
+CREATE INDEX `fk_INCIDENTE_ATIVO1_idx` ON `mydb`.`INCIDENTE` (`id_ativo` ASC) ;
+
+CREATE INDEX `fk_INCIDENTE_USUARIO1_idx` ON `mydb`.`INCIDENTE` (`id_usuario` ASC) ;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`HISTORICO_INCIDENTE`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`HISTORICO_INCIDENTE` (
+  `id_historico_incidente` BIGINT(150) NULL,
+  `campo_alterado` VARCHAR(100) NOT NULL,
+  `valor_anterior` TEXT(150) NULL,
+  `valor_novo` TEXT(150) NULL,
+  `data_alteracao` DATETIME NOT NULL,
+  `observacao` VARCHAR(500) NULL,
+  `id_incidente` BIGINT(150) NOT NULL,
+  `id_usuario` BIGINT(100) NOT NULL,
+  PRIMARY KEY (`id_historico_incidente`),
+  CONSTRAINT `fk_HISTORICO_INCIDENTE_INCIDENTE1`
+    FOREIGN KEY (`id_incidente`)
+    REFERENCES `mydb`.`INCIDENTE` (`id_incidente`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_HISTORICO_INCIDENTE_USUARIO1`
+    FOREIGN KEY (`id_usuario`)
+    REFERENCES `mydb`.`USUARIO` (`id_usuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_HISTORICO_INCIDENTE_INCIDENTE1_idx` ON `mydb`.`HISTORICO_INCIDENTE` (`id_incidente` ASC) ;
+
+CREATE INDEX `fk_HISTORICO_INCIDENTE_USUARIO1_idx` ON `mydb`.`HISTORICO_INCIDENTE` (`id_usuario` ASC) ;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`PERMISSAO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`PERMISSAO` (
+  `id_permissao` INT NULL AUTO_INCREMENT,
+  `codigo` VARCHAR(50) NOT NULL,
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` VARCHAR(255) NULL,
+  PRIMARY KEY (`id_permissao`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`AUDITORIA`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`AUDITORIA` (
+  `id_auditoria` BIGINT(150) NULL AUTO_INCREMENT,
+  `acao` VARCHAR(100) NOT NULL,
+  `entidade` VARCHAR(100) NOT NULL,
+  `dados_anteriores` TEXT NULL,
+  `dados_novos` TEXT NULL,
+  `endereco_ip` VARCHAR(45) NULL,
+  `data_acao` DATETIME NULL,
+  `id_usuario` BIGINT(100) NOT NULL,
+  PRIMARY KEY (`id_auditoria`),
+  CONSTRAINT `fk_AUDITORIA_USUARIO1`
+    FOREIGN KEY (`id_usuario`)
+    REFERENCES `mydb`.`USUARIO` (`id_usuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_AUDITORIA_USUARIO1_idx` ON `mydb`.`AUDITORIA` (`id_usuario` ASC);
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`EQUIPE`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`EQUIPE` (
+  `id_equipe` INT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(100) NOT NULL,
+  `descricao` VARCHAR(255) NULL,
+  `ativo` TINYINT NOT NULL,
+  `data_criacao` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_equipe`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`ATRIBUICAO_INCIDENTE`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`ATRIBUICAO_INCIDENTE` (
+  `id_atribuicao_incidente` BIGINT(150) NOT NULL,
+  `id_incidente` BIGINT(150) NOT NULL,
+  `id_usuario_responsavel` BIGINT(150) NULL,
+  `id_equipe_responsavel` INT NULL,
+  `id_usuario_atribuidor` BIGINT(150) NOT NULL,
+  `data_atribuicao` DATETIME NOT NULL,
+  `data_fim` DATETIME NULL,
+  `ativo` TINYINT NOT NULL,
+  `observacao` VARCHAR(500) NULL,
+  `id_incidente` BIGINT(150) NOT NULL,
+  `id_usuario` BIGINT(100) NOT NULL,
+  `id_equipe` INT NOT NULL,
+  PRIMARY KEY (`id_atribuicao_incidente`),
+  CONSTRAINT `fk_ATRIBUIÇÃO_INCIDENTE_INCIDENTE1`
+    FOREIGN KEY (`id_incidente`)
+    REFERENCES `mydb`.`INCIDENTE` (`id_incidente`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ATRIBUIÇÃO_INCIDENTE_USUARIO1`
+    FOREIGN KEY (`id_usuario`)
+    REFERENCES `mydb`.`USUARIO` (`id_usuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ATRIBUIÇÃO_INCIDENTE_EQUIPE1`
+    FOREIGN KEY (`id_equipe`)
+    REFERENCES `mydb`.`EQUIPE` (`id_equipe`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_ATRIBUIÇÃO_INCIDENTE_INCIDENTE1_idx` ON `mydb`.`ATRIBUICAO_INCIDENTE` (`id_incidente` ASC) ;
+
+CREATE INDEX `fk_ATRIBUIÇÃO_INCIDENTE_USUARIO1_idx` ON `mydb`.`ATRIBUICAO_INCIDENTE` (`id_usuario` ASC) ;
+
+CREATE INDEX `fk_ATRIBUIÇÃO_INCIDENTE_EQUIPE1_idx` ON `mydb`.`ATRIBUICAO_INCIDENTE` (`id_equipe` ASC) ;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`ACAO_TRATAMENTO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`ACAO_TRATAMENTO` (
+  `id_acao` BIGINT(150) NOT NULL,
+  `tipo_acao` VARCHAR(50) NOT NULL,
+  `descricao` TEXT(150) NOT NULL,
+  `data_acao` DATETIME NOT NULL,
+  `id_incidente` BIGINT(150) NOT NULL,
+  `id_usuario` BIGINT(100) NOT NULL,
+  PRIMARY KEY (`id_acao`),
+  CONSTRAINT `fk_AÇÃO_TRATAMENTO_INCIDENTE1`
+    FOREIGN KEY (`id_incidente`)
+    REFERENCES `mydb`.`INCIDENTE` (`id_incidente`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_AÇÃO_TRATAMENTO_USUARIO1`
+    FOREIGN KEY (`id_usuario`)
+    REFERENCES `mydb`.`USUARIO` (`id_usuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_AÇÃO_TRATAMENTO_INCIDENTE1_idx` ON `mydb`.`ACAO_TRATAMENTO` (`id_incidente` ASC) ;
+
+CREATE INDEX `fk_AÇÃO_TRATAMENTO_USUARIO1_idx` ON `mydb`.`ACAO_TRATAMENTO` (`id_usuario` ASC) ;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`PERFIL_PERMISSAO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`PERFIL_PERMISSAO` (
+  `id_perfil` INT NOT NULL,
+  `id_permissao` INT NOT NULL,
+  CONSTRAINT `fk_PERFIL_has_PERMISSÃO_PERFIL`
+    FOREIGN KEY (`id_perfil`)
+    REFERENCES `mydb`.`PERFIL` (`id_perfil`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_PERFIL_has_PERMISSÃO_PERMISSÃO1`
+    FOREIGN KEY (`id_permissao`)
+    REFERENCES `mydb`.`PERMISSAO` (`id_permissao`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_PERFIL_has_PERMISSÃO_PERMISSÃO1_idx` ON `mydb`.`PERFIL_PERMISSAO` (`id_permissao` ASC) ;
+
+CREATE INDEX `fk_PERFIL_has_PERMISSÃO_PERFIL_idx` ON `mydb`.`PERFIL_PERMISSAO` (`id_perfil` ASC) ;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`EQUIPE_USUARIO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`EQUIPE_USUARIO` (
+  `id_equipe` INT NOT NULL,
+  `id_usuario` BIGINT(100) NOT NULL,
+  `data_entrada` DATETIME NOT NULL,
+  `data_saida` DATETIME NULL,
+  `ativo` TINYINT NOT NULL,
+  CONSTRAINT `fk_EQUIPE_has_USUARIO_EQUIPE1`
+    FOREIGN KEY (`id_equipe`)
+    REFERENCES `mydb`.`EQUIPE` (`id_equipe`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_EQUIPE_has_USUARIO_USUARIO1`
+    FOREIGN KEY (`id_usuario`)
+    REFERENCES `mydb`.`USUARIO` (`id_usuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_EQUIPE_has_USUARIO_USUARIO1_idx` ON `mydb`.`EQUIPE_USUARIO` (`id_usuario` ASC) ;
+
+CREATE INDEX `fk_EQUIPE_has_USUARIO_EQUIPE1_idx` ON `mydb`.`EQUIPE_USUARIO` (`id_equipe` ASC) ;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
