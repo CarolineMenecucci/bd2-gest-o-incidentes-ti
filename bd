@@ -1,3 +1,9 @@
+DROP DATABASE IF EXISTS `mydb`;
+
+CREATE DATABASE `mydb`
+DEFAULT CHARACTER SET utf8;
+
+USE `mydb`;
 -- MySQL Workbench Forward Engineering
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
@@ -62,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`TENTATIVA_LOGIN` (
   `endereço_ip` VARCHAR(45) NULL,
   `user_agent` VARCHAR(500) NULL,
   `motivo_falha` VARCHAR(255) NULL,
-  `id_usuario` INT NOT NULL,
+  `id_usuario` BIGINT NOT NULL,
   PRIMARY KEY (`id_tentativa`),
   CONSTRAINT `fk_TENTATIVA_LOGIN_USUARIO1`
     FOREIGN KEY (`id_usuario`)
@@ -85,8 +91,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`ORIGEM_INCIDENTE` (
   PRIMARY KEY (`id_origem_incidente`))
 ENGINE = InnoDB;
 
-CREATE UNIQUE INDEX `nome_UNIQUE` ON `mydb`.`ORIGEM_INCIDENTE` (`nome` ASC) VISIBLE;
-
+CREATE UNIQUE INDEX `nome_UNIQUE` ON `mydb`.`ORIGEM_INCIDENTE` (`nome` ASC);
 
 -- -----------------------------------------------------
 -- Table `mydb`.`CATEGORIA_INCIDENTE`
@@ -305,7 +310,6 @@ CREATE TABLE IF NOT EXISTS `mydb`.`ATRIBUICAO_INCIDENTE` (
   `data_fim` DATETIME NULL,
   `ativo` TINYINT NOT NULL,
   `observacao` VARCHAR(500) NULL,
-  `id_incidente` BIGINT(150) NOT NULL,
   `id_usuario` BIGINT(100) NOT NULL,
   `id_equipe` INT NOT NULL,
   PRIMARY KEY (`id_atribuicao_incidente`),
