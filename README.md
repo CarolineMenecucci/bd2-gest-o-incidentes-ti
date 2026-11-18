@@ -1,1 +1,1 @@
-# bd2-gest-o-incidentes-ti
+#Sistema de monitoramento e gestão de incidentes de segurança da informação
