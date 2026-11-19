@@ -37,7 +37,10 @@ O sistema utiliza **MySQL** e **MongoDB**, demonstrando como diferentes tecnolog
 | GitHub | Versionamento e organização do projeto |
 
 ---
+### Quantidade de Documentos
+A base do banco relacional MySQL possui **67.100 registros**. Ja, o MongoDb possui o total aproximado de **200.105 documentos**.
 
+---
 ## 🏗️ Arquitetura da Solução
 
 O projeto utiliza uma arquitetura híbrida de armazenamento.
@@ -421,12 +424,6 @@ No MongoDB Compass:
 5. Confirmar a importação.
 
 Repetir o procedimento para as coleções necessárias.
-
-### 4. Quantidade de Documentos
-
-Na base utilizada durante o desenvolvimento, o total confirmado foi de **200.105 documentos**.
-
----
 
 ## 📚 Documentação
 
