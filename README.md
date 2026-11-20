@@ -1,210 +1,160 @@
-
 # 🛡️ Sistema de Monitoramento e Gestão de Incidentes de Segurança da Informação
 
-## 📌 Sobre o Projeto
+## 📌 Sobre o projeto
 
-Este projeto apresenta o desenvolvimento de um sistema de monitoramento e gestão de incidentes de segurança da informação, utilizando bancos de dados relacionais e não relacionais.
+Projeto acadêmico de modelagem, armazenamento, consulta e análise de dados relacionados à gestão de incidentes de segurança da informação. A solução utiliza **MySQL/MariaDB** (modelo relacional) e **MongoDB** (modelo orientado a documentos), explorando as diferenças e complementaridades entre SQL e NoSQL.
 
-A solução foi desenvolvida como projeto acadêmico, com o objetivo de aplicar conceitos de modelagem de dados, SQL, NoSQL, consultas, operações CRUD, indexação, agregações e escalabilidade.
-
-O sistema utiliza **MySQL** e **MongoDB**, demonstrando como diferentes tecnologias de banco de dados podem trabalhar de forma complementar.
-
----
+O projeto abrange modelagem de dados, integridade referencial, operações CRUD, consultas, índices, agregações e organização de conjuntos de dados de maior volume.
 
 ## 🎯 Objetivos
 
-- Registrar e gerenciar incidentes de segurança da informação.
-- Armazenar informações sobre usuários, ativos e incidentes.
-- Monitorar eventos relacionados à segurança.
-- Manter registros de auditoria das operações realizadas.
-- Realizar consultas e análises dos dados armazenados.
-- Demonstrar operações CRUD em bancos SQL e NoSQL.
-- Avaliar estratégias de armazenamento, indexação e escalabilidade.
-- Trabalhar com um volume significativo de documentos.
+- Registrar, classificar e acompanhar incidentes de segurança da informação.
+- Relacionar incidentes a usuários, equipes, ativos, categorias e status.
+- Armazenar eventos de segurança, alertas, evidências digitais e vulnerabilidades.
+- Manter trilhas de auditoria e histórico de alterações.
+- Consultar e analisar registros em bancos relacionais e orientados a documentos.
+- Exercitar operações CRUD, indexação e *Aggregation Pipeline*.
+- Avaliar alternativas de organização e armazenamento de grandes volumes de dados.
 
----
+## 🛠️ Tecnologias utilizadas
 
-## 🛠️ Tecnologias Utilizadas
-
-| Tecnologia | Finalidade |
-|------------|------------|
-| MySQL | Banco de dados relacional |
+| Tecnologia | Aplicação |
+|---|---|
+| MySQL / MariaDB | Banco de dados relacional |
+| SQL | Scripts DDL, DML e consultas |
 | MongoDB | Banco de dados NoSQL orientado a documentos |
-| MongoDB Compass | Gerenciamento visual do MongoDB |
-| SQL | Manipulação de dados relacionais |
-| JavaScript | Consultas e operações MongoDB |
-| JSON | Representação e importação de documentos |
-| GitHub | Versionamento e organização do projeto |
+| MongoDB Compass | Visualização, administração e importação de coleções |
+| JavaScript / MongoDB Shell (`mongosh`) | Consultas, agregações e criação de índices |
+| JSON / Extended JSON | Representação dos documentos exportados |
+| Git e GitHub / GitHub Desktop | Versionamento e publicação dos arquivos |
 
----
-### Quantidade de Documentos
-A base do banco relacional MySQL possui **67.100 registros**. Ja, o MongoDb possui o total aproximado de **200.105 documentos**.
+## 📊 Volume de dados
 
----
-## 🏗️ Arquitetura da Solução
+### Banco relacional — `bd_incidentes_ti`
 
-O projeto utiliza uma arquitetura híbrida de armazenamento.
+O export SQL utilizado no projeto foi apresentado com **17 tabelas** e **aproximadamente 67.100 registros**. Os scripts DDL descrevem a estrutura das tabelas, chaves e relacionamentos; os comandos DML carregam os registros.
 
-### MySQL — Banco Relacional
+### Banco não relacional — `seguranca_incidentes`
 
-O MySQL é utilizado para representar informações estruturadas que necessitam de relacionamentos e integridade referencial.
+O conjunto de exports MongoDB apresentado no projeto contém **7 coleções** e **234.105 documentos**:
 
-A modelagem relacional contempla entidades relacionadas à gestão de incidentes, usuários, ativos e demais informações do sistema.
+| Coleção | Documentos | Finalidade |
+|---|---:|---|
+| `incidentes` | 33.002 | Incidentes registrados e informações operacionais |
+| `eventos_seguranca` | 34.002 | Eventos e atividades relevantes à segurança |
+| `auditoria_incidentes` | 33.101 | Histórico e rastreabilidade de alterações |
+| `alertas_seguranca` | 34.000 | Alertas associados a condições e riscos de segurança |
+| `metricas_ativos` | 34.000 | Indicadores e medições relacionadas aos ativos |
+| `evidencias_digitais` | 33.000 | Evidências relacionadas a ocorrências e investigações |
+| `vulnerabilidades` | 33.000 | Informações sobre vulnerabilidades identificadas |
+| **Total** | **234.105** | |
 
-A implementação relacional aborda:
+> As quantidades são referentes aos arquivos exportados utilizados na documentação. Caso novas importações ou alterações sejam realizadas, os totais do ambiente MongoDB podem mudar.
 
-- Modelagem entidade-relacionamento (MER).
-- Modelo relacional.
-- Dicionário de dados.
-- Criação de tabelas e relacionamentos.
-- Chaves primárias e estrangeiras.
-- Inserção e manipulação de dados.
-- Consultas SQL.
-- Views, procedures e triggers.
-- Índices e controle de permissões.
+## 🏗️ Arquitetura e modelagem
 
-### MongoDB — Banco Não Relacional
+A proposta utiliza **persistência poliglota**, combinando dois modelos de armazenamento.
 
-O MongoDB é utilizado para armazenar documentos relacionados aos incidentes, eventos de segurança e registros de auditoria.
+### MySQL/MariaDB — modelo relacional
 
-Sua estrutura flexível permite representar informações aninhadas, listas e atributos variáveis.
+Representa informações estruturadas e relacionamentos entre entidades do sistema. O banco inclui tabelas relacionadas a incidentes, usuários, ativos, equipes, categorias, status, permissões e auditoria.
 
-**Banco de dados:** `seguranca_incidentes`
+Os elementos abordados incluem:
 
-**Coleções:**
+- Modelo entidade-relacionamento e modelo relacional.
+- Tabelas, campos, tipos de dados e relacionamentos.
+- Chaves primárias, estrangeiras e índices.
+- Scripts **DDL** (definição da estrutura) e **DML** (manipulação e inserção de dados).
+- Consultas SQL e recursos adicionais documentados no projeto, quando aplicáveis.
 
-1. `incidentes`
-2. `eventos_seguranca`
-3. `auditoria_incidentes`
+### MongoDB — modelo orientado a documentos
 
----
+**Banco:** `seguranca_incidentes`
 
-## 🍃 Modelagem MongoDB
+Os documentos JSON podem conter objetos aninhados, arrays, datas, atributos opcionais e estruturas específicas de cada coleção. Isso permite registrar tanto dados de incidentes quanto informações complementares de monitoramento e investigação.
 
-### 1. Coleção `incidentes`
+## 🍃 Coleções MongoDB
 
-Armazena os registros de incidentes de segurança.
+### 1. `incidentes`
 
-Entre as informações representadas estão:
+Armazena os incidentes e informações para acompanhamento, incluindo identificador, título, descrição, categoria, severidade, status, origem, ativo, responsável e datas. O modelo utiliza campos aninhados, como `ativo.tipo`, `ativo.criticidade` e `severidade.nivel`.
 
-- Identificador do incidente.
-- Título e descrição.
-- Categoria.
-- Severidade.
-- Status.
-- Ativo relacionado.
-- Responsável.
-- Origem.
-- Datas de registro e resolução.
+### 2. `eventos_seguranca`
 
-A coleção utiliza documentos incorporados para representar informações relacionadas ao incidente.
+Reúne eventos relevantes para a segurança, como tentativas de autenticação, falhas de login, atividades suspeitas e eventos associados a possíveis ameaças. Pode conter horários, IPs, informações de origem, usuário, tags e dados específicos do evento.
 
-### 2. Coleção `eventos_seguranca`
+### 3. `auditoria_incidentes`
 
-Armazena eventos associados à segurança dos sistemas.
+Registra ações e alterações vinculadas aos incidentes. Nos documentos apresentados aparecem campos como `tipo_acao`, `data_hora`, `usuario`, `alteracoes.dados_anteriores`, `alteracoes.dados_novos` e, conforme o documento, `incidente_id`, `campos_alterados` e `sucesso`.
 
-Exemplos de eventos:
+### 4. `alertas_seguranca`
 
-- Tentativas de autenticação.
-- Falhas de login.
-- Alertas de malware.
-- Atividades suspeitas.
+Organiza alertas de segurança para apoiar a identificação, o acompanhamento e a priorização de situações potencialmente relevantes. Os atributos específicos dependem do tipo de alerta registrado.
 
-Os documentos podem conter:
+### 5. `metricas_ativos`
 
-- Tipo do evento.
-- Data e horário.
-- Usuário relacionado.
-- Endereço IP de origem.
-- Informações de autenticação.
-- Dados específicos de malware.
-- Tags.
-- Indicador de suspeita.
+Armazena métricas relacionadas a ativos de tecnologia, possibilitando análises de monitoramento e acompanhamento operacional.
 
-### 3. Coleção `auditoria_incidentes`
+### 6. `evidencias_digitais`
 
-Armazena o histórico de operações realizadas sobre incidentes.
+Mantém documentos associados a evidências digitais de eventos ou incidentes, auxiliando a documentação e a rastreabilidade de análises.
 
-Entre os campos estão:
+### 7. `vulnerabilidades`
 
-- Identificador da auditoria.
-- Identificador do incidente.
-- Tipo da ação.
-- Usuário responsável.
-- Data e horário.
-- Dados anteriores.
-- Dados novos.
-- Campos alterados.
-- Resultado da operação.
+Reúne informações sobre vulnerabilidades e possíveis riscos relacionados ao ambiente monitorado.
 
-Essa coleção permite acompanhar alterações e manter a rastreabilidade das operações.
+> Os documentos podem apresentar conjuntos de campos diferentes dentro de uma mesma coleção, característica do modelo flexível do MongoDB.
 
----
+## 📄 Exemplo de documento JSON
 
-## 📄 Exemplo de Documento JSON
-
-Exemplo de registro de evento de segurança:
+Exemplo baseado na estrutura de um registro da coleção `incidentes`:
 
 ```json
 {
-  "_id": "EVT-000001",
-  "tipo_evento": "tentativa_login",
-  "descricao": "Tentativa de acesso malsucedida ao sistema",
-  "data_hora": {
-    "$date": "2024-01-01T08:30:00Z"
+  "_id": "INC-2026-00125",
+  "titulo": "Tentativas de acesso não autorizado",
+  "categoria": {
+    "id": 3,
+    "descricao": "Acesso não autorizado"
   },
-  "usuario": {
-    "id": 1,
-    "nome": "Melissa Sousa"
+  "severidade": {
+    "id": 4,
+    "descricao": "Alta"
   },
-  "origem": {
-    "endereco_ip": "192.168.1.105",
-    "dispositivo": "Computador",
-    "sistema_operacional": "Windows"
-  },
-  "autenticacao": {
-    "resultado": "falha",
-    "motivo": "Senha incorreta",
-    "tentativas": 3
+  "status": {
+    "id": 2,
+    "descricao": "Em investigação"
   },
   "tags": [
     "login",
-    "autenticacao",
-    "falha"
+    "forca_bruta",
+    "acesso_nao_autorizado"
   ],
-  "suspeito": true
+  "data_resolucao": null
 }
 ```
 
-Esse exemplo demonstra documentos aninhados, arrays, strings, números, booleanos e datas.
-
----
+O exemplo demonstra objetos aninhados, arrays, textos, números e valores nulos. Os exports também utilizam **Extended JSON**, como `{"$date": "2025-02-02T10:45:00.000Z"}`, para representar tipos de data do MongoDB.
 
 ## 🔎 Consultas MongoDB
 
-Foram preparadas consultas envolvendo:
+As consultas podem utilizar `find()`, filtros por igualdade, operadores relacionais (`$gt`, `$gte`, `$lt`, `$lte`), operadores lógicos (`$and`, `$or`), campos aninhados, projeções, `sort()` e `limit()`.
 
-- `find()`
-- Filtros por igualdade.
-- Operadores `$gt`, `$gte`, `$lt` e `$lte`.
-- Operadores lógicos `$and` e `$or`.
-- Consultas em campos aninhados.
-- Consultas em arrays.
-- Projeção de campos.
-- Ordenação com `sort()`.
-- Limitação de resultados com `limit()`.
-
-Exemplo:
+Selecionar o banco no MongoDB Shell:
 
 ```javascript
 use seguranca_incidentes
+```
 
+**Incidentes associados a servidores:**
+
+```javascript
 db.incidentes.find({
   "ativo.tipo": "Servidor"
 })
 ```
 
-Consulta utilizando operador lógico:
+**Incidentes associados a servidores ou ativos de alta criticidade:**
 
 ```javascript
 db.incidentes.find({
@@ -215,51 +165,50 @@ db.incidentes.find({
 })
 ```
 
----
+**Exemplo de projeção e limitação:**
+
+```javascript
+db.incidentes.find(
+  { "ativo.tipo": "Servidor" },
+  { titulo: 1, "ativo.nome": 1, "status.nome": 1 }
+).limit(10)
+```
 
 ## 📈 Aggregation Pipeline
 
-Foram executadas duas agregações no MongoDB.
-
-### Agregação 1 — Incidentes por Criticidade do Ativo
+### Agregação 1 — Incidentes por criticidade do ativo
 
 ```javascript
 db.incidentes.aggregate([
   {
     $match: {
-      "ativo.criticidade": {
-        $exists: true
-      }
+      "ativo.criticidade": { $exists: true }
     }
   },
   {
     $group: {
       _id: "$ativo.criticidade",
-      total_incidentes: {
-        $sum: 1
-      }
+      total_incidentes: { $sum: 1 }
     }
   },
   {
-    $sort: {
-      total_incidentes: -1
-    }
+    $sort: { total_incidentes: -1 }
   }
 ])
 ```
 
-Na execução realizada, foram obtidos os seguintes resultados:
+**Resultados apresentados na execução documentada:**
 
-| Criticidade | Quantidade |
-|-------------|------------|
+| Criticidade | Incidentes |
+|---|---:|
 | Crítica | 8.250 |
 | Média | 8.250 |
 | Alta | 8.250 |
 | Baixa | 8.250 |
 
-Os valores refletem a distribuição dos dados utilizados no teste.
+Esses resultados somam 33.000 incidentes com o campo de criticidade utilizado na agregação. A coleção exportada possui 33.002 documentos no total; portanto, nem todos necessariamente participam dessa consulta.
 
-### Agregação 2 — Severidade dos Incidentes em Servidores
+### Agregação 2 — Severidade dos incidentes em servidores
 
 ```javascript
 db.incidentes.aggregate([
@@ -271,15 +220,11 @@ db.incidentes.aggregate([
   {
     $group: {
       _id: "$severidade.nivel",
-      quantidade: {
-        $sum: 1
-      }
+      quantidade: { $sum: 1 }
     }
   },
   {
-    $sort: {
-      quantidade: -1
-    }
+    $sort: { quantidade: -1 }
   },
   {
     $project: {
@@ -291,26 +236,18 @@ db.incidentes.aggregate([
 ])
 ```
 
-Essa agregação agrupa incidentes associados a servidores conforme o nível de severidade.
-
----
+Essa consulta agrupa incidentes relacionados a servidores pelo nível de severidade. O resultado exato depende dos dados presentes na coleção no momento da execução.
 
 ## ⚡ Indexação
 
-Foi criado um índice adicional na coleção `incidentes`.
+Exemplo de índice utilizado para favorecer consultas por tipo de ativo:
 
 ```javascript
 db.incidentes.createIndex(
-  {
-    "ativo.tipo": 1
-  },
-  {
-    name: "idx_ativo_tipo"
-  }
+  { "ativo.tipo": 1 },
+  { name: "idx_ativo_tipo" }
 )
 ```
-
-O objetivo é favorecer consultas que filtram incidentes pelo tipo do ativo.
 
 Para verificar os índices:
 
@@ -318,7 +255,7 @@ Para verificar os índices:
 db.incidentes.getIndexes()
 ```
 
-Para analisar o plano de execução de uma consulta:
+Para inspecionar o plano de execução de uma consulta:
 
 ```javascript
 db.incidentes.find({
@@ -326,70 +263,51 @@ db.incidentes.find({
 }).explain("executionStats")
 ```
 
-A análise do plano permite verificar se o índice foi utilizado e avaliar as estatísticas de execução.
+O resultado de `explain()` ajuda a verificar se um índice foi utilizado e a examinar estatísticas de execução.
 
----
+## 📦 Organização dos arquivos no repositório
 
-## 📦 Estratégia para Grandes Volumes de Dados
+Uma organização possível é:
 
-O projeto considera o crescimento contínuo dos registros de segurança.
+```text
+projeto/
+├── README.md
+├── mysql/
+│   ├── ddl_bd_incidentes_ti.sql
+│   └── dml_bd_incidentes_ti.sql
+└── mongodb/
+    ├── incidentes.json
+    ├── eventos_seguranca.json
+    ├── auditoria_incidentes.json
+    ├── alertas_seguranca.json
+    ├── metricas_ativos.json
+    ├── evidencias_digitais.json
+    └── vulnerabilidades.json
+```
 
-As coleções de eventos e auditoria tendem a apresentar crescimento significativo, pois podem receber novos documentos a cada ocorrência ou alteração registrada.
+**Observação:** a estrutura acima é uma sugestão de organização. Ajuste os nomes e caminhos para corresponder aos arquivos realmente publicados no seu repositório. Se alguma coleção estiver dividida em partes, mantenha os nomes correspondentes, como `incidentes_parte_1.json` e `incidentes_parte_2.json`.
 
-As estratégias consideradas incluem:
-
-- Criação de índices em campos frequentemente consultados.
-- Consultas com filtros e projeções.
-- Paginação e limitação de resultados.
-- Monitoramento do crescimento das coleções.
-- Políticas de retenção e arquivamento.
-- Avaliação de particionamento e escalabilidade conforme a demanda.
-
-O MongoDB oferece flexibilidade para armazenar eventos com estruturas variáveis, enquanto o MySQL oferece recursos relacionais adequados às informações estruturadas.
-
----
-
-## 🔗 Integração entre MySQL e MongoDB
-
-A proposta utiliza as duas tecnologias de maneira complementar.
-
-**MySQL:**
-- Dados estruturados.
-- Relacionamentos entre entidades.
-- Integridade referencial.
-- Operações que exigem consistência relacional.
-
-**MongoDB:**
-- Registros de eventos.
-- Documentos de incidentes.
-- Histórico de auditoria.
-- Informações semiestruturadas.
-- Consultas e agregações sobre documentos.
-
-A arquitetura demonstra uma estratégia de persistência poliglota, em que diferentes modelos de dados são utilizados de acordo com as necessidades da aplicação.
-
----
-
-## 🚀 Como Executar o Projeto
+## 🚀 Como executar e importar os dados
 
 ### Pré-requisitos
 
-- MySQL instalado e configurado.
-- MongoDB instalado e em execução.
-- MongoDB Compass ou MongoDB Shell.
+- Um servidor MySQL ou MariaDB disponível.
+- MongoDB em execução.
+- MongoDB Compass ou MongoDB Shell (`mongosh`).
 - Arquivos SQL e JSON do projeto.
 
-### 1. Configurar o MySQL
+### 1. MySQL/MariaDB
 
-1. Iniciar o servidor MySQL.
-2. Executar os scripts de criação do banco e das tabelas.
-3. Executar os scripts SQL de consultas e demais recursos disponíveis no repositório.
+1. Criar ou selecionar o banco `bd_incidentes_ti`.
+2. Executar o script DDL para criar as tabelas, índices e relacionamentos.
+3. Executar o script DML para inserir os registros.
+4. Executar as consultas SQL e demais scripts documentados, conforme as dependências entre objetos.
 
-A ordem de execução deve respeitar as dependências entre tabelas e objetos do banco.
+> Evite executar comandos de recriação ou exclusão de tabelas sobre um banco que contenha dados importantes sem antes realizar backup.
 
-### 2. Configurar o MongoDB
+### 2. MongoDB
 
-Iniciar o MongoDB e conectar utilizando:
+Conectar ao servidor, por exemplo, usando a URI local:
 
 ```text
 mongodb://localhost:27017
@@ -401,7 +319,7 @@ Selecionar o banco de dados:
 use seguranca_incidentes
 ```
 
-Criar as coleções, caso ainda não existam:
+Se necessário, criar as coleções:
 
 ```javascript
 db.createCollection("incidentes")
@@ -410,50 +328,53 @@ db.createCollection("auditoria_incidentes")
 db.createCollection("alertas_seguranca")
 db.createCollection("metricas_ativos")
 db.createCollection("evidencias_digitais")
-db.createCollection("vulnerabilidadess")
+db.createCollection("vulnerabilidades")
 ```
 
-### 3. Importar os Dados JSON
+### 3. Importar os JSONs no MongoDB Compass
 
-No MongoDB Compass:
+1. Abrir o banco `seguranca_incidentes`.
+2. Selecionar a coleção correspondente.
+3. Usar a opção **Add Data / Import JSON or CSV** (o texto pode variar conforme a versão).
+4. Selecionar o arquivo JSON da coleção.
+5. Confirmar a importação e conferir a quantidade de documentos.
 
-1. Acessar o banco `seguranca_incidentes`.
-2. Selecionar a coleção desejada.
-3. Utilizar a opção de importação de dados.
-4. Selecionar o arquivo JSON correspondente.
-5. Confirmar a importação.
+Caso um JSON tenha sido **dividido em partes para publicação no GitHub**, importe cada parte para a **mesma coleção**, em sequência. Não é necessário criar uma coleção diferente para cada parte.
 
-Repetir o procedimento para as coleções necessárias.
+Arquivos `.zip` precisam ser extraídos antes de selecionar os JSONs no importador do Compass. Evite importar novamente documentos que já estejam cadastrados, pois identificadores `_id` repetidos podem provocar erros de chave duplicada.
 
-## 📚 Documentação
+## 📦 Grandes volumes de dados e GitHub
 
-O projeto contempla materiais relacionados a:
+O projeto trabalha com conjuntos de dados relativamente grandes. Para facilitar o versionamento, os arquivos podem ser organizados por coleção e, quando necessário, subdivididos em arquivos JSON válidos.
 
-- Levantamento de requisitos.
-- Modelagem entidade-relacionamento.
-- Modelo relacional.
-- Dicionário de dados.
-- Implementação MySQL.
-- Modelagem MongoDB.
-- Exemplos JSON.
+- Pelo navegador, o GitHub limita arquivos individuais a 25 MiB.
+- Com Git/GitHub Desktop, arquivos individuais maiores podem ser enviados até o limite de 100 MiB.
+- Arquivos individuais acima de 100 MiB exigem divisão ou uma solução como Git LFS.
+- É recomendável não publicar credenciais, tokens, senhas ou dados pessoais reais em repositórios públicos.
+
+## 🔗 Integração conceitual entre MySQL e MongoDB
+
+A combinação dos bancos demonstra como tecnologias diferentes podem atender a necessidades complementares:
+
+- **MySQL/MariaDB:** dados estruturados, relações entre entidades, chaves e integridade referencial.
+- **MongoDB:** incidentes enriquecidos, eventos, alertas, evidências, métricas, vulnerabilidades e trilhas de auditoria em documentos flexíveis.
+
+A proposta exemplifica uma estratégia de **persistência poliglota**. A presença dos dois bancos no projeto não implica, por si só, uma sincronização automática entre eles.
+
+## 📚 Documentação do projeto
+
+O repositório pode conter materiais relativos a:
+
+- Levantamento de requisitos e modelagem entidade-relacionamento.
+- Modelo relacional e dicionário de dados.
+- Scripts DDL e DML do MySQL/MariaDB.
+- Exports JSON das sete coleções do MongoDB.
 - Consultas SQL e NoSQL.
-- Operações CRUD.
-- Aggregation Pipeline.
-- Indexação.
-- Estratégias para grandes volumes de dados.
+- Exemplos CRUD e *Aggregation Pipeline*.
+- Índices e estratégias de gerenciamento de grandes volumes.
 
-Os arquivos correspondentes devem ser consultados nas pastas do repositório.
+## 🎓 Considerações finais
 
----
+O projeto explora o uso conjunto de bancos relacionais e não relacionais em um cenário de gestão e monitoramento de incidentes de segurança da informação.
 
-## 🎓 Considerações Finais
-
-O desenvolvimento deste projeto permitiu aplicar conceitos de bancos de dados relacionais e não relacionais em um cenário de segurança da informação.
-
-O MySQL foi utilizado para trabalhar com estruturas relacionais, enquanto o MongoDB permitiu explorar documentos flexíveis, registros de eventos, auditoria, consultas e agregações.
-
-A utilização de **200.105 documentos** no ambiente MongoDB contribuiu para a realização de testes com um volume expressivo de dados.
-
-O projeto demonstra como diferentes tecnologias de armazenamento podem ser combinadas para atender às necessidades de um sistema de monitoramento e gestão de incidentes de segurança da informação.
-
----
+A estrutura relacional oferece organização e integridade para entidades relacionadas; já o MongoDB permite representar registros com diferentes atributos e informações aninhadas. Os exports utilizados na documentação reúnem **17 tabelas no banco relacional** e **7 coleções com 234.105 documentos no MongoDB**, proporcionando uma base para estudos de modelagem, consultas, agregações e indexação.
