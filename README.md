@@ -2,7 +2,7 @@
 
 ## 📌 Sobre o projeto
 
-Projeto acadêmico de modelagem, armazenamento, consulta e análise de dados relacionados à gestão de incidentes de segurança da informação. A solução utiliza **MySQL/MariaDB** (modelo relacional) e **MongoDB** (modelo orientado a documentos), explorando as diferenças e complementaridades entre SQL e NoSQL.
+Projeto de modelagem, armazenamento, consulta e análise de dados relacionados à gestão de incidentes de segurança da informação. A solução utiliza **MySQL/MariaDB** (modelo relacional) e **MongoDB** (modelo orientado a documentos), explorando as diferenças e complementaridades entre SQL e NoSQL.
 
 O projeto abrange modelagem de dados, integridade referencial, operações CRUD, consultas, índices, agregações e organização de conjuntos de dados de maior volume.
 
@@ -53,9 +53,9 @@ O conjunto de exports MongoDB apresentado no projeto contém **7 coleções** e 
 
 ## 🏗️ Arquitetura e modelagem
 
-A proposta utiliza **persistência poliglota**, combinando dois modelos de armazenamento.
+A proposta utiliza **persistência híbrida**, combinando dois modelos de armazenamento.
 
-### MySQL/MariaDB — modelo relacional
+### MySQL — modelo relacional
 
 Representa informações estruturadas e relacionamentos entre entidades do sistema. O banco inclui tabelas relacionadas a incidentes, usuários, ativos, equipes, categorias, status, permissões e auditoria.
 
@@ -136,156 +136,7 @@ Exemplo baseado na estrutura de um registro da coleção `incidentes`:
 
 O exemplo demonstra objetos aninhados, arrays, textos, números e valores nulos. Os exports também utilizam **Extended JSON**, como `{"$date": "2025-02-02T10:45:00.000Z"}`, para representar tipos de data do MongoDB.
 
-## 🔎 Consultas MongoDB
-
-As consultas podem utilizar `find()`, filtros por igualdade, operadores relacionais (`$gt`, `$gte`, `$lt`, `$lte`), operadores lógicos (`$and`, `$or`), campos aninhados, projeções, `sort()` e `limit()`.
-
-Selecionar o banco no MongoDB Shell:
-
-```javascript
-use seguranca_incidentes
-```
-
-**Incidentes associados a servidores:**
-
-```javascript
-db.incidentes.find({
-  "ativo.tipo": "Servidor"
-})
-```
-
-**Incidentes associados a servidores ou ativos de alta criticidade:**
-
-```javascript
-db.incidentes.find({
-  $or: [
-    { "ativo.tipo": "Servidor" },
-    { "ativo.criticidade": "Alta" }
-  ]
-})
-```
-
-**Exemplo de projeção e limitação:**
-
-```javascript
-db.incidentes.find(
-  { "ativo.tipo": "Servidor" },
-  { titulo: 1, "ativo.nome": 1, "status.nome": 1 }
-).limit(10)
-```
-
-## 📈 Aggregation Pipeline
-
-### Agregação 1 — Incidentes por criticidade do ativo
-
-```javascript
-db.incidentes.aggregate([
-  {
-    $match: {
-      "ativo.criticidade": { $exists: true }
-    }
-  },
-  {
-    $group: {
-      _id: "$ativo.criticidade",
-      total_incidentes: { $sum: 1 }
-    }
-  },
-  {
-    $sort: { total_incidentes: -1 }
-  }
-])
-```
-
-**Resultados apresentados na execução documentada:**
-
-| Criticidade | Incidentes |
-|---|---:|
-| Crítica | 8.250 |
-| Média | 8.250 |
-| Alta | 8.250 |
-| Baixa | 8.250 |
-
-Esses resultados somam 33.000 incidentes com o campo de criticidade utilizado na agregação. A coleção exportada possui 33.002 documentos no total; portanto, nem todos necessariamente participam dessa consulta.
-
-### Agregação 2 — Severidade dos incidentes em servidores
-
-```javascript
-db.incidentes.aggregate([
-  {
-    $match: {
-      "ativo.tipo": "Servidor"
-    }
-  },
-  {
-    $group: {
-      _id: "$severidade.nivel",
-      quantidade: { $sum: 1 }
-    }
-  },
-  {
-    $sort: { quantidade: -1 }
-  },
-  {
-    $project: {
-      _id: 0,
-      nivel_severidade: "$_id",
-      quantidade: 1
-    }
-  }
-])
-```
-
-Essa consulta agrupa incidentes relacionados a servidores pelo nível de severidade. O resultado exato depende dos dados presentes na coleção no momento da execução.
-
-## ⚡ Indexação
-
-Exemplo de índice utilizado para favorecer consultas por tipo de ativo:
-
-```javascript
-db.incidentes.createIndex(
-  { "ativo.tipo": 1 },
-  { name: "idx_ativo_tipo" }
-)
-```
-
-Para verificar os índices:
-
-```javascript
-db.incidentes.getIndexes()
-```
-
-Para inspecionar o plano de execução de uma consulta:
-
-```javascript
-db.incidentes.find({
-  "ativo.tipo": "Servidor"
-}).explain("executionStats")
-```
-
-O resultado de `explain()` ajuda a verificar se um índice foi utilizado e a examinar estatísticas de execução.
-
-## 📦 Organização dos arquivos no repositório
-
-Uma organização possível é:
-
-```text
-projeto/
-├── README.md
-├── mysql/
-│   ├── ddl_bd_incidentes_ti.sql
-│   └── dml_bd_incidentes_ti.sql
-└── mongodb/
-    ├── incidentes.json
-    ├── eventos_seguranca.json
-    ├── auditoria_incidentes.json
-    ├── alertas_seguranca.json
-    ├── metricas_ativos.json
-    ├── evidencias_digitais.json
-    └── vulnerabilidades.json
-```
-
-**Observação:** a estrutura acima é uma sugestão de organização. Ajuste os nomes e caminhos para corresponder aos arquivos realmente publicados no seu repositório. Se alguma coleção estiver dividida em partes, mantenha os nomes correspondentes, como `incidentes_parte_1.json` e `incidentes_parte_2.json`.
+---
 
 ## 🚀 Como executar e importar os dados
 
